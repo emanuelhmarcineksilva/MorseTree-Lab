@@ -1,6 +1,7 @@
 package morsetree.ui;
 
 import morsetree.MorseEncoder;
+import morsetree.MorsePlayer;
 import morsetree.MorseTree;
 import morsetree.RegrasMorse;
 
@@ -49,6 +50,7 @@ public final class MorseTreeUI {
     private boolean textoParaMorse = true;
     private JButton botaoTexto;
     private JButton botaoMorse;
+    private JButton botaoReproduzir;
 
     private MorseTreeUI() {
     }
@@ -213,9 +215,13 @@ public final class MorseTreeUI {
             saida.setText("");
             definirStatus("Campos limpos", MUTED);
         });
+        botaoReproduzir = criarBotao("▶  Reproduzir", false);
+        botaoReproduzir.addActionListener(evento -> reproduzirSaida());
         botoes.add(traduzir);
         botoes.add(Box.createHorizontalStrut(8));
         botoes.add(limpar);
+        botoes.add(Box.createHorizontalStrut(8));
+        botoes.add(botaoReproduzir);
         status.setFont(new Font("SansSerif", Font.PLAIN, 12));
         status.setForeground(MUTED);
         barra.add(botoes, BorderLayout.WEST);
@@ -342,6 +348,20 @@ public final class MorseTreeUI {
             // Trata entrada inválida sem produzir resultado incorreto.
             saida.setText(textoParaMorse ? "Caractere sem representação Morse." : "Sequência inválida!");
             definirStatus(erro.getMessage(), ERROR);
+        }
+    }
+
+    private void reproduzirSaida() {
+        String codigo = saida.getText().trim();
+        if (codigo.isEmpty()) {
+            definirStatus("Não há resultado para reproduzir", ERROR);
+            return;
+        }
+        try {
+            MorsePlayer.playMorse(codigo);
+            definirStatus("Reproduzindo som Morse...", GREEN);
+        } catch (Exception erro) {
+            definirStatus("Erro ao reproduzir som: " + erro.getMessage(), ERROR);
         }
     }
 
